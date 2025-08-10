@@ -22,7 +22,7 @@ struct PersistenceController {
                 context: viewContext,
                 id: pokemonId,
                 name: "Pokémon \(pokemonId)",
-                types: ["normal"],
+                types: ["grass", "poison"],
                 hp: 50, attack: 55, defense: 45,
                 specialAttack: 60, specialDefense: 50, speed: 65,
                 sprite: URL(string: "https://example.com/sprite\(pokemonId).png")!,
@@ -62,9 +62,14 @@ struct PersistenceController {
                  * The store could not be migrated to the current model version.
                  Check the error message to determine what the actual problem was.
                  */
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                // fatalError("Unresolved error \(error), \(error.userInfo)")
+                print(error) // We do not crash the whole app, but print the error instead
             }
         })
+
+        // It means that when inserting an instance that already exist in our DB, we then keep the existing one in the DB, as it is.
+        // It gets rid of any duplicates that tries to be persisted in the DB
+        container.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyStoreTrump
         container.viewContext.automaticallyMergesChangesFromParent = true
     }
 }
