@@ -42,24 +42,17 @@ struct MainScreen: View {
 
     private func addPokemon() {
         withAnimation {
-            let newPokemon = Pokemon(context: viewContext)
-
             let randomID = Int16.random(in: 0 ... Int16.max)
-            newPokemon.id = randomID
-            newPokemon.name = "Pokémon \(randomID)"
-            newPokemon.types = ["normal"] // no cast
-
-            // Example stats (dummy values)
-            newPokemon.hp = 50
-            newPokemon.attack = 55
-            newPokemon.defense = 45
-            newPokemon.specialAttack = 60
-            newPokemon.specialDefense = 50
-            newPokemon.speed = 65
-
-            // Example URLs (replace with real sprite links)
-            newPokemon.sprite = URL(string: "https://example.com/sprite\(randomID).png")!
-            newPokemon.shiny = URL(string: "https://example.com/shiny\(randomID).png")!
+            _ = Pokemon(
+                context: viewContext,
+                id: randomID,
+                name: "Pokémon \(randomID)",
+                types: ["normal"],
+                hp: 50, attack: 55, defense: 45,
+                specialAttack: 60, specialDefense: 50, speed: 65,
+                sprite: URL(string: "https://example.com/sprite\(randomID).png")!,
+                shiny: URL(string: "https://example.com/shiny\(randomID).png")!
+            )
 
             do {
                 try viewContext.save()
@@ -95,6 +88,6 @@ private let itemFormatter: DateFormatter = {
     return formatter
 }()
 
-#Preview("pokemonId") {
+#Preview("MainScreen") {
     MainScreen().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
