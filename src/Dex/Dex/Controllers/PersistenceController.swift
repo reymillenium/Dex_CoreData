@@ -16,9 +16,28 @@ struct PersistenceController {
     static let preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-        for _ in 0 ..< 10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+        for index in 0 ..< 10 {
+            let newPokemon = Pokemon(context: viewContext)
+
+            let pokemonId = Int16(index) + 1
+            newPokemon.id = pokemonId
+            newPokemon.name = "Pokémon \(pokemonId)"
+            newPokemon.types = ["normal"] // no cast
+
+            // Example stats (dummy values)
+            newPokemon.hp = 50
+            newPokemon.attack = 55
+            newPokemon.defense = 45
+            newPokemon.specialAttack = 60
+            newPokemon.specialDefense = 50
+            newPokemon.speed = 65
+
+            // Example URLs (replace with real sprite links)
+            newPokemon.sprite = URL(string: "https://example.com/sprite\(pokemonId).png")!
+            newPokemon.shiny = URL(string: "https://example.com/shiny\(pokemonId).png")!
+
+            // Example favorite status
+            // newPokemon.favorite = (index % 2 == 0) // true for even indexes
         }
         do {
             try viewContext.save()

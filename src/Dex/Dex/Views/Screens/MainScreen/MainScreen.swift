@@ -8,42 +8,58 @@
 import CoreData
 import SwiftUI
 
-struct ContentView: View {
+struct MainScreen: View {
     @Environment(\.managedObjectContext) private var viewContext
 
-    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)], animation: .default)
-    private var items: FetchedResults<Item>
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Pokemon.id, ascending: true)], animation: .default)
+    private var pokemons: FetchedResults<Pokemon>
 
     var body: some View {
         NavigationView {
             List {
-                ForEach(items) { item in
+                ForEach(pokemons) { pokemon in
                     NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
+                        Text("Pokemon with name: \(pokemon.name!)")
                     } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
+                        Text(pokemon.name!)
                     }
                 }
-                .onDelete(perform: deleteItems)
+                .onDelete(perform: deletePokemons)
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     EditButton()
                 }
                 ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                    Button(action: addPokemon) {
+                        Label("Add Pokemon", systemImage: "plus")
                     }
                 }
             }
-            Text("Select an item")
+            Text("Select a Pokemon")
         }
     }
 
-    private func addItem() {
+    private func addPokemon() {
         withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+            let newPokemon = Pokemon(context: viewContext)
+
+            let randomID = Int16.random(in: 0 ... Int16.max)
+            newPokemon.id = randomID
+            newPokemon.name = "Pokémon \(randomID)"
+            newPokemon.types = ["normal"] // no cast
+
+            // Example stats (dummy values)
+            newPokemon.hp = 50
+            newPokemon.attack = 55
+            newPokemon.defense = 45
+            newPokemon.specialAttack = 60
+            newPokemon.specialDefense = 50
+            newPokemon.speed = 65
+
+            // Example URLs (replace with real sprite links)
+            newPokemon.sprite = URL(string: "https://example.com/sprite\(randomID).png")!
+            newPokemon.shiny = URL(string: "https://example.com/shiny\(randomID).png")!
 
             do {
                 try viewContext.save()
@@ -56,9 +72,9 @@ struct ContentView: View {
         }
     }
 
-    private func deleteItems(offsets: IndexSet) {
+    private func deletePokemons(offsets: IndexSet) {
         withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
+            offsets.map { pokemons[$0] }.forEach(viewContext.delete)
 
             do {
                 try viewContext.save()
@@ -79,6 +95,6 @@ private let itemFormatter: DateFormatter = {
     return formatter
 }()
 
-#Preview {
-    ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+#Preview("pokemonId") {
+    MainScreen().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }
