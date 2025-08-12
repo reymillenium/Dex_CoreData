@@ -34,4 +34,35 @@ extension Pokemon {
         self.shiny = shiny
         self.favorite = favorite
     }
+
+    convenience init(context: NSManagedObjectContext, from fetched: FetchedPokemon, favorite: Bool = false) {
+        self.init(context: context)
+        self.id = fetched.id
+        self.name = fetched.name
+        self.types = fetched.types
+        self.hp = fetched.hp
+        self.attack = fetched.attack
+        self.defense = fetched.defense
+        self.specialAttack = fetched.specialAttack
+        self.specialDefense = fetched.specialDefense
+        self.speed = fetched.speed
+        self.sprite = fetched.sprite
+        self.shiny = fetched.shiny
+        self.favorite = favorite
+    }
+
+    // Handy updater for existing rows (e.g., on refresh):
+    func apply(_ fetched: FetchedPokemon, favorite: Bool? = nil) {
+        name = fetched.name
+        types = fetched.types
+        hp = fetched.hp
+        attack = fetched.attack
+        defense = fetched.defense
+        specialAttack = fetched.specialAttack
+        specialDefense = fetched.specialDefense
+        speed = fetched.speed
+        sprite = fetched.sprite
+        shiny = fetched.shiny
+        if let favorite { self.favorite = favorite }
+    }
 }

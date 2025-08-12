@@ -14,6 +14,8 @@ struct MainScreen: View {
     @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Pokemon.id, ascending: true)], animation: .default)
     private var pokemons: FetchedResults<Pokemon>
 
+    let fetcher = FetchService()
+
     var body: some View {
         NavigationView {
             List {
@@ -37,6 +39,23 @@ struct MainScreen: View {
                 }
             }
             Text("Select a Pokemon")
+        }
+        .task {
+            await getPokemons()
+        }
+    }
+
+    private func getPokemons() async {
+        Task {
+            for id in 1 ..< 151 {
+                do {
+                    let fetchedPokemon = try await fetcher.fetchPokemon(for: id)
+                    _ = Pokemon(context: viewContext, from: fetchedPokemon)
+                    try viewContext.save()
+                } catch {
+                    print(error)
+                }
+            }
         }
     }
 
